@@ -1,118 +1,104 @@
-# Violin Rental Agency - Database Application
-CPSC 3660 Group Project  
-**Team:** Nawal Mohamuud, Aaron Amoso, Chidumebi Obioha
+# Violin Rental Agency  
+**CPSC 3660 — Winter 2026**  
+**Team:** Nawal Mohamuud, Aaron Amoso, Chidumebi Obioha  
 
-## Setup Instructions
-Import the database schema
-bashmysql -u twog3669 -p twog3669 < schema.sql
+---
 
+## How to Run
 
-## Overview
-A web-based database application for managing violin rental operations, including inventory management, customer records, rental tracking, and payment processing.
+1. **Import `schema.sql`** into phpMyAdmin on vcandle:
+    - Select the `twog3669` database.
+    - Go to the **Import** tab and upload the `schema.sql` file.
+2. **Visit `setup_password.php`** once in the browser to set passwords, then **delete it**.
+3. **Go to `login.php`** to start using the system.
 
-## Tech Stack
-- **PHP:** 8.3
-- **Database:** MySQL 8.0
-- **Server:** Apache2 (WSL/Ubuntu or local)
-- **Frontend:** HTML/CSS (styled with Cormorant Garamond & DM Mono fonts)
+**URL:**  
+[http://vcandle.cs.uleth.ca/~twog3669/ViolinRental-db/login.php](http://vcandle.cs.uleth.ca/~twog3669/ViolinRental-db/login.php)
 
-## Project Structure
+---
 
-### Core Files
-- `schema.sql` — Database schema with 10 tables and sample data
-- `db.php` — Database connection configuration
-- `session.php` — Session management and authentication helpers
+## Login Credentials
 
-### Authentication
-- `login.php` — Admin and customer login portal
-- `logout.php` — Logout handler
-- `unauthorized.php` — 403 unauthorized error page
+| **Username** | **Password**   | **Role**   |
+|--------------|----------------|------------|
+| admin        | admin123       | Admin      |
+| alice        | password123    | Customer   |
+| bob          | password123    | Customer   |
+| carol        | password123    | Customer   |
+| david        | password123    | Customer   |
+| eva          | password123    | Customer   |
 
-### Dashboards
-- `admin_dashboard.php` — Admin panel (stats, recent rentals, navigation)
-- `customer_dashboard.php` — Customer profile and rental history
+---
 
-### Admin CRUD Operations (Customer Management)
-- `query.php` — Search and view all customers
-- `insert.php` — Add a new customer
-- `update.php` — Edit customer information
-- `delete.php` — Remove a customer
+## Pages
 
-### Setup
-- `setup_password.php` — Initialize password hashes (run ONCE, then delete/restrict)
+| **File**                | **What it does**                                              |
+|-------------------------|---------------------------------------------------------------|
+| `login.php`             | Login for all users                                           |
+| `admin_dashboard.php`   | Admin home with stats                                         |
+| `query.php`             | Search and view customers                                     |
+| `insert.php`            | Add a customer                                                |
+| `update.php`            | Edit a customer                                               |
+| `delete.php`            | Delete a customer                                             |
+| `products.php`          | Add, edit, delete products                                    |
+| `rentals.php`           | View, edit, delete rentals                                    |
+| `rental_insert.php`     | Create a new rental with payment                              |
+| `queries.php`           | 17 advanced SQL queries                                       |
+| `customer_dashboard.php`| Customer profile and rental history                           |
 
-## Database Schema
+---
 
-Tables: MANUFACTURER_DISTRIBUTOR, PRODUCT, MAINTENANCE_LOG, CUSTOMER, RECEIPT, PAYMENT, RENTAL, RENTAL_ITEM, USERS
+## Database
 
-**See `CONNECTION_MAP.md` for detailed entity relationships.**
+### Tables:
+- `CUSTOMER`
+- `USERS`
+- `PRODUCT`
+- `MANUFACTURER_DISTRIBUTOR`
+- `RENTAL`
+- `RENTAL_ITEM`
+- `RECEIPT`
+- `PAYMENT`
+- `MAINTENANCE_LOG`
 
-## Quick Start
+### Views:
+- `vw_active_rentals`
+- `vw_revenue_by_customer`
+- `vw_product_rental_count`
 
-### 1. Import Database Schema
-```bash
-mysql -u user -p < schema.sql
-```
+### Computed Column:
+- `RENTAL.total_days` — auto-calculated from rental dates
 
-### 2. Configure Database Connection
-Edit `db.php` if needed:
-```php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'user');
-define('DB_PASS', 'password');
-define('DB_NAME', 'violin_rental');
-```
+### Weak Entity:
+- `MAINTENANCE_LOG` depends on `PRODUCT`
 
-### 3. Start Services (WSL/Ubuntu)
-```bash
-sudo service apache2 start
-sudo service mysql start
-```
+---
 
-### 4. Initialize Password Hashes
-1. Visit: `http://localhost/violin-rental/setup_password.php`
-2. After setup, delete or restrict access to `setup_password.php`
+## Queries (`queries.php`)
 
-### 5. Login
-- **URL:** `http://localhost/violin-rental/login.php`
-- **Admin Account:**
-  - Username: `admin`
-  - Password: `admin123`
-- **Sample Customer Accounts:**
-  - alice / password123
-  - bob / password123
-  - carol / password123
-  - david / password123
-  - eva / password123
+| **#** | **Topic**                         | **Keywords used**                                   |
+|-------|-----------------------------------|-----------------------------------------------------|
+| 1     | Rentals per customer             | `GROUP BY`, `COUNT`                                 |
+| 2     | Customers with 2+ rentals        | `HAVING`                                            |
+| 3     | Price stats                      | `AVG`, `MIN`, `MAX`                                 |
+| 4     | Revenue by payment method        | `GROUP BY`, `SUM`                                   |
+| 5     | Rentals in date range            | `BETWEEN`                                           |
+| 6     | Manufacturers missing email      | `IS NULL`                                           |
+| 7     | Cities matching pattern          | `LIKE`                                              |
+| 8     | Never paid cash                  | `NOT IN`                                            |
+| 9     | Rented full-size violin          | `IN`, subquery                                      |
+| 10    | Above average price              | `ALL`                                               |
+| 11    | Never rented products            | `NOT EXISTS`                                        |
+| 12    | All names combined               | `UNION`                                             |
+| 13    | Active rentals today             | `JOIN`, `CURDATE`                                   |
+| 14    | Customers who rented AND paid    | `INTERSECT`                                         |
+| 15    | Renters who never paid cash      | `EXCEPT`                                            |
+| 16    | Rental length category           | `CASE` expression                                   |
+| 17    | Create audit log table           | DDL — `CREATE TABLE`                                |
 
-## File Connections
+---
 
-All files are properly connected with:
-- ✅ Consistent `require_once` includes
-- ✅ Role-based access control (admin/customer)
-- ✅ Prepared statements for SQL injection prevention
-- ✅ Session management across all pages
-- ✅ Navigation links between pages
+## Testing Notes
 
-**See `CONNECTION_MAP.md` for full connection details.**
-
-## Security Features
-
-- Password hashing with bcrypt (PASSWORD_BCRYPT)
-- Prepared statements to prevent SQL injection
-- Session regeneration on login
-- Role-based page access control
-- XSS prevention with htmlspecialchars()
-
-## Known Limitations
-
-Currently implemented:
-- Customer management (CRUD)
-- Basic admin dashboard
-
-Not yet implemented:
-- Product/inventory management pages
-- Rental management interface
-- Payment processing UI
-- Advanced reporting features
-- Customer-facing rental interface
+1. **New rental (`rental_insert.php`)** automatically creates a `RECEIPT` and `PAYMENT` record.
+2. **Customers can only see their own data** — accessing admin pages redirects to `unauthorized.php`.

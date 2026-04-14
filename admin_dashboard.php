@@ -115,13 +115,9 @@ $conn->close();
     <a href="insert.php">Add Customer</a>
     <div class="nav-section">Inventory</div>
     <a href="products.php">Products</a>
-    <a href="manufacturers.php">Manufacturers</a>
     <div class="nav-section">Rentals</div>
     <a href="rentals.php">All Rentals</a>
     <a href="rental_insert.php">New Rental</a>
-    <div class="nav-section">Finance</div>
-    <a href="payments.php">Payments</a>
-    <a href="receipts.php">Receipts</a>
     <div class="nav-section">Reports</div>
     <a href="queries.php">Advanced Queries</a>
   </nav>

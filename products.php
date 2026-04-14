@@ -2,13 +2,14 @@
 require_once 'session.php';
 require_once 'db.php';
 
-require_login('admin');
+require_login(); // both admin and customers can view; write actions checked below
 
 $conn = getConnection();
 $msg = '';
 
 // delete product
 if (isset($_GET['delete'])) {
+    if (!is_admin()) { header('Location: unauthorized.php'); exit; }
     $id = (int)$_GET['delete'];
 
     $stmt = $conn->prepare("DELETE FROM PRODUCT WHERE product_id=?");
@@ -25,6 +26,7 @@ if (isset($_GET['delete'])) {
 
 // add product
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'insert') {
+    if (!is_admin()) { header('Location: unauthorized.php'); exit; }
 
     $type  = $_POST['type'];
     $size  = $_POST['size'];
@@ -48,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // update product
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update') {
+    if (!is_admin()) { header('Location: unauthorized.php'); exit; }
 
     $id    = (int)$_POST['product_id'];
     $type  = $_POST['type'];
@@ -58,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $mid = $_POST['manufacturer_id'] ? (int)$_POST['manufacturer_id'] : null;
 
     $stmt = $conn->prepare("UPDATE PRODUCT SET type=?, size=?, price=?, stock=?, manufacturer_id=? WHERE product_id=?");
-    $stmt->bind_param("ssdiis", $type, $size, $price, $stock, $mid, $id);
+    $stmt->bind_param("ssdiii", $type, $size, $price, $stock, $mid, $id);
 
     if ($stmt->execute()) {
         $msg = "Product updated";
@@ -161,6 +164,7 @@ a {
 <div class="msg"><?= htmlspecialchars($msg) ?></div>
 <?php endif; ?>
 
+<?php if (is_admin()): ?>
 <h2><?= $edit ? "Edit Product" : "Add Product" ?></h2>
 
 <form method="POST">
@@ -213,6 +217,7 @@ Manufacturer:<br>
 <?php endif; ?>
 
 </form>
+<?php endif; // end admin-only form ?>
 
 <h2>All Products</h2>
 
@@ -236,8 +241,10 @@ Manufacturer:<br>
 <td><?= $p['stock'] ?></td>
 <td><?= htmlspecialchars($p['mfr'] ?? '') ?></td>
 <td>
+    <?php if (is_admin()): ?>
     <a href="products.php?edit=<?= $p['product_id'] ?>">Edit</a>
     <a href="products.php?delete=<?= $p['product_id'] ?>" onclick="return confirm('Delete this product?')">Delete</a>
+    <?php else: ?>—<?php endif; ?>
 </td>
 </tr>
 <?php endforeach; ?>

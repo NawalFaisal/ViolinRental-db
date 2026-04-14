@@ -6,7 +6,7 @@ define('DB_USER', 'user');
 
 define('DB_PASS', 'password');
 
-define('DB_NAME', 'violin_rental');
+define('DB_NAME', 'twog3669');
 
 function getConnection() {
 

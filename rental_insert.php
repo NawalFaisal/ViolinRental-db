@@ -2,7 +2,7 @@
 require_once 'session.php';
 require_once 'db.php';
 
-require_login('admin');
+require_login(); // both admin and customers can create rentals
 
 $conn = getConnection();
 $msg = '';
@@ -162,6 +162,7 @@ button {
 <h3>Basic Info</h3>
 
 Customer:
+<?php if (is_admin()): ?>
 <select name="customer_id" required>
 <option value="">Select</option>
 <?php foreach ($customers as $c): ?>
@@ -170,6 +171,10 @@ Customer:
 </option>
 <?php endforeach; ?>
 </select>
+<?php else: ?>
+<input type="hidden" name="customer_id" value="<?= current_customer_id() ?>">
+<strong><?php foreach ($customers as $c) { if ($c['customer_id'] == current_customer_id()) echo htmlspecialchars($c['name']); } ?></strong>
+<?php endif; ?>
 
 <br>
 

@@ -10,7 +10,7 @@ $queries = [
 
     1 => [
         'title' => 'Total rentals per customer',
-        'desc'  => 'Counts how many rentals each customer made',
+        'desc'  => 'GROUP BY + COUNT',
         'sql'   => "SELECT c.name, COUNT(r.rental_id) AS total_rentals
                     FROM CUSTOMER c
                     JOIN RENTAL r ON c.customer_id = r.customer_id
@@ -20,7 +20,7 @@ $queries = [
 
     2 => [
         'title' => 'Customers with more than 1 rental',
-        'desc'  => 'Only shows customers with 2+ rentals',
+        'desc'  => 'GROUP BY + HAVING',
         'sql'   => "SELECT c.name, COUNT(r.rental_id) AS num_rentals
                     FROM CUSTOMER c
                     JOIN RENTAL r ON c.customer_id = r.customer_id
@@ -30,8 +30,8 @@ $queries = [
     ],
 
     3 => [
-        'title' => 'Average / min / max price',
-        'desc'  => 'Basic stats on product prices',
+        'title' => 'Average / min / max product price',
+        'desc'  => 'AVG, MIN, MAX aggregate functions',
         'sql'   => "SELECT AVG(price) AS avg_price,
                            MIN(price) AS min_price,
                            MAX(price) AS max_price
@@ -40,7 +40,7 @@ $queries = [
 
     4 => [
         'title' => 'Revenue by payment method',
-        'desc'  => 'Total revenue grouped by payment type',
+        'desc'  => 'GROUP BY + SUM',
         'sql'   => "SELECT payment_method,
                            COUNT(*) AS total_payments,
                            SUM(amount) AS revenue
@@ -50,8 +50,8 @@ $queries = [
     ],
 
     5 => [
-        'title' => 'Rentals between Jan–Mar 2026',
-        'desc'  => 'Date range filter example',
+        'title' => 'Rentals between Jan and Mar 2026',
+        'desc'  => 'BETWEEN for date range',
         'sql'   => "SELECT r.rental_id, c.name, r.rental_date, r.rental_end_date, r.total_days
                     FROM RENTAL r
                     JOIN CUSTOMER c ON r.customer_id = c.customer_id
@@ -61,7 +61,7 @@ $queries = [
 
     6 => [
         'title' => 'Manufacturers with no email',
-        'desc'  => 'Find rows where email is missing',
+        'desc'  => 'IS NULL to find missing data',
         'sql'   => "SELECT manufacturer_id, name, country, contact_phone
                     FROM MANUFACTURER_DISTRIBUTOR
                     WHERE contact_email IS NULL"
@@ -69,7 +69,7 @@ $queries = [
 
     7 => [
         'title' => "Customers from cities with 'bridge'",
-        'desc'  => 'Simple LIKE example',
+        'desc'  => 'LIKE pattern matching',
         'sql'   => "SELECT name, city, province, phone_number
                     FROM CUSTOMER
                     WHERE city LIKE '%bridge%'"
@@ -77,7 +77,7 @@ $queries = [
 
     8 => [
         'title' => 'Customers who never paid cash',
-        'desc'  => 'Uses NOT IN with subquery',
+        'desc'  => 'NOT IN with subquery',
         'sql'   => "SELECT name, email
                     FROM CUSTOMER
                     WHERE customer_id NOT IN (
@@ -89,7 +89,7 @@ $queries = [
 
     9 => [
         'title' => 'Customers who rented full-size violin',
-        'desc'  => 'IN with subquery across tables',
+        'desc'  => 'IN with nested subquery',
         'sql'   => "SELECT name, email, city
                     FROM CUSTOMER
                     WHERE customer_id IN (
@@ -103,7 +103,7 @@ $queries = [
 
     10 => [
         'title' => 'Products above average price',
-        'desc'  => 'Compare against overall average',
+        'desc'  => 'ALL comparison with subquery',
         'sql'   => "SELECT product_id, type, size, price
                     FROM PRODUCT
                     WHERE price > ALL (
@@ -114,7 +114,7 @@ $queries = [
 
     11 => [
         'title' => 'Products never rented',
-        'desc'  => 'Uses NOT EXISTS',
+        'desc'  => 'NOT EXISTS',
         'sql'   => "SELECT p.product_id, p.type, p.size, p.price
                     FROM PRODUCT p
                     WHERE NOT EXISTS (
@@ -124,8 +124,8 @@ $queries = [
     ],
 
     12 => [
-        'title' => 'All names (UNION)',
-        'desc'  => 'Combines customers + users',
+        'title' => 'All names in system (UNION)',
+        'desc'  => 'UNION combines two SELECT results',
         'sql'   => "SELECT name AS name_in_system, 'Customer' AS source
                     FROM CUSTOMER
                     UNION
@@ -135,34 +135,8 @@ $queries = [
     ],
 
     13 => [
-        'title' => 'Rental length category',
-        'desc'  => 'CASE example',
-        'sql'   => "SELECT r.rental_id, c.name, r.total_days,
-                        CASE
-                            WHEN r.total_days <= 30 THEN 'Short'
-                            WHEN r.total_days <= 90 THEN 'Medium'
-                            ELSE 'Long'
-                        END AS category
-                    FROM RENTAL r
-                    JOIN CUSTOMER c ON r.customer_id = c.customer_id
-                    ORDER BY r.total_days DESC"
-    ],
-
-    14 => [
-        'title' => 'Maintenance cost per product',
-        'desc'  => 'Group + sum maintenance cost',
-        'sql'   => "SELECT p.type, p.size,
-                           COUNT(ml.maintenance_date) AS times_serviced,
-                           SUM(ml.cost) AS total_cost
-                    FROM PRODUCT p
-                    JOIN MAINTENANCE_LOG ml ON p.product_id = ml.product_id
-                    GROUP BY p.product_id, p.type, p.size
-                    ORDER BY total_cost DESC"
-    ],
-
-    15 => [
-        'title' => 'Active rentals',
-        'desc'  => 'Shows rentals not finished yet',
+        'title' => 'Active rentals today',
+        'desc'  => 'JOIN with date filter using CURDATE',
         'sql'   => "SELECT r.rental_id, c.name, r.rental_date,
                            r.rental_end_date, r.total_days,
                            COALESCE(rec.total_price, 0) AS amount_charged
@@ -173,24 +147,46 @@ $queries = [
                     ORDER BY r.rental_end_date"
     ],
 
-    16 => [
-        'title' => 'Create audit log table',
-        'desc'  => 'DDL example',
-        'sql'   => "CREATE TABLE IF NOT EXISTS AUDIT_LOG (
-                        log_id INT AUTO_INCREMENT PRIMARY KEY,
-                        action_desc VARCHAR(200),
-                        performed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    14 => [
+        'title' => 'Customers who rented AND paid (INTERSECT)',
+        'desc'  => 'Set intersection',
+        'sql'   => "SELECT customer_id, name FROM CUSTOMER WHERE customer_id IN (SELECT customer_id FROM RENTAL)
+                    INTERSECT
+                    SELECT customer_id, name FROM CUSTOMER WHERE customer_id IN (SELECT customer_id FROM PAYMENT)"
+    ],
+
+    15 => [
+        'title' => 'Renters who never paid cash (EXCEPT)',
+        'desc'  => 'Set difference',
+        'sql'   => "SELECT customer_id, name FROM CUSTOMER WHERE customer_id IN (SELECT customer_id FROM RENTAL)
+                    EXCEPT
+                    SELECT customer_id, name FROM CUSTOMER WHERE customer_id IN (
+                        SELECT customer_id FROM PAYMENT WHERE payment_method = 'cash'
                     )"
     ],
 
+    16 => [
+        'title' => 'Rental length category (CASE)',
+        'desc'  => 'CASE expression — labels each rental as Short, Medium, or Long',
+        'sql'   => "SELECT r.rental_id, c.name, r.total_days,
+                        CASE
+                            WHEN r.total_days <= 30 THEN 'Short'
+                            WHEN r.total_days <= 90 THEN 'Medium'
+                            ELSE 'Long'
+                        END AS rental_category
+                    FROM RENTAL r
+                    JOIN CUSTOMER c ON r.customer_id = c.customer_id
+                    ORDER BY r.total_days DESC"
+    ],
+
     17 => [
-        'title' => 'Insert high-value customers into log',
-        'desc'  => 'Insert from select',
-        'sql'   => "INSERT INTO AUDIT_LOG (action_desc)
-                    SELECT CONCAT('High-value customer: ', c.name, ' paid $', p.amount)
-                    FROM CUSTOMER c
-                    JOIN PAYMENT p ON c.customer_id = p.customer_id
-                    WHERE p.amount > 50"
+        'title' => 'Create audit log table (DDL)',
+        'desc'  => 'DDL example — CREATE TABLE IF NOT EXISTS',
+        'sql'   => "CREATE TABLE IF NOT EXISTS AUDIT_LOG (
+                        log_id      INT AUTO_INCREMENT PRIMARY KEY,
+                        action_desc VARCHAR(200),
+                        performed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )"
     ],
 
 ];
