@@ -91,21 +91,23 @@ th {
     margin-bottom: 15px;
 }
 
-button, a {
+button {
     padding: 6px 10px;
-    background: #b8621a;
+    background: #333;
     color: white;
-    text-decoration: none;
+    border: none;
     cursor: pointer;
 }
 
-button:hover, a:hover {
-    background: #d97c2a;
-}
+button:hover { background: #555; }
 
 a {
     margin-right: 10px;
+    color: #000;
+    text-decoration: none;
 }
+
+a:hover { text-decoration: underline; }
 
 .badge {
     padding: 2px 8px;

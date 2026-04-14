@@ -29,151 +29,85 @@ $recent = $conn->query(
 $conn->close();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard — Violin Rental</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #f5f0e8; --ink: #1a1208; --amber: #b8621a;
-    --amber2: #d97c2a; --warm: #e8dcc8; --muted: #7a6a52;
-    --sidebar-w: 220px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { display: flex; min-height: 100vh; background: var(--cream); font-family: 'DM Mono', monospace; color: var(--ink); }
-
-  /* Sidebar */
-  .sidebar {
-    width: var(--sidebar-w); background: var(--ink); color: var(--cream);
-    display: flex; flex-direction: column; padding: 2rem 0; position: fixed;
-    top: 0; left: 0; bottom: 0; z-index: 10;
-  }
-  .sidebar-brand {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.3rem;
-    padding: 0 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,.1);
-    line-height: 1.3;
-  }
-  .sidebar-brand span { display: block; font-size: .65rem; letter-spacing: .15em; text-transform: uppercase; opacity: .5; margin-top: .2rem; }
-  nav { flex: 1; padding: 1.5rem 0; }
-  nav a {
-    display: block; padding: .65rem 1.5rem; font-size: .75rem;
-    letter-spacing: .08em; text-transform: uppercase; text-decoration: none;
-    color: rgba(245,240,232,.6); transition: color .2s, background .2s;
-  }
-  nav a:hover, nav a.active { color: var(--cream); background: rgba(184,98,26,.25); }
-  nav a.active { border-left: 3px solid var(--amber); }
-  .nav-section { font-size: .6rem; letter-spacing: .2em; color: rgba(255,255,255,.25); padding: 1rem 1.5rem .4rem; text-transform: uppercase; }
-  .sidebar-footer { padding: 1rem 1.5rem; font-size: .7rem; color: rgba(255,255,255,.35); }
-  .sidebar-footer a { color: var(--amber); text-decoration: none; }
-
-  /* Main */
-  .main { margin-left: var(--sidebar-w); flex: 1; padding: 2.5rem 3rem; }
-  .page-header { margin-bottom: 2.5rem; }
-  .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; }
-  .page-header p { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
-
-  /* Stats grid */
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.2rem; margin-bottom: 2.5rem; }
-  .stat-card {
-    background: #fff; border: 1px solid rgba(184,98,26,.18); border-radius: 2px;
-    padding: 1.4rem 1.6rem; position: relative; overflow: hidden;
-  }
-  .stat-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--amber); }
-  .stat-label { font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: .6rem; }
-  .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 600; color: var(--ink); }
-  .stat-value.money::before { content: '$'; font-size: 1.2rem; vertical-align: super; }
-
-  /* Table */
-  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; margin-bottom: 1rem; }
-  .table-wrap { background: #fff; border: 1px solid rgba(184,98,26,.18); border-radius: 2px; overflow: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-  th { background: var(--ink); color: var(--cream); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; padding: .8rem 1.2rem; text-align: left; }
-  td { padding: .8rem 1.2rem; border-bottom: 1px solid rgba(184,98,26,.1); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--cream); }
-
-  .badge {
-    display: inline-block; padding: .2rem .6rem; border-radius: 20px;
-    font-size: .65rem; letter-spacing: .08em; text-transform: uppercase;
-  }
-  .badge-active { background: #d4edda; color: #155724; }
-  .badge-past   { background: var(--warm); color: var(--muted); }
+body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+h1 { margin-bottom: 5px; }
+p.welcome { margin-bottom: 20px; color: #555; font-size: 0.9rem; }
+nav { margin-bottom: 25px; }
+nav a { margin-right: 12px; text-decoration: none; color: #000; font-size: 0.9rem; }
+nav a:hover { text-decoration: underline; }
+.nav-sep { margin-right: 12px; color: #aaa; }
+.stats { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+.stat-card { background: #fff; border: 1px solid #ccc; padding: 15px 20px; min-width: 140px; }
+.stat-label { font-size: 0.8rem; color: #555; margin-bottom: 5px; }
+.stat-value { font-size: 1.8rem; font-weight: bold; }
+table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 10px; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; }
+th { background: #333; color: #fff; text-align: left; }
+.badge { padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
+.badge-active { background: #d4edda; color: #155724; }
+.badge-past   { background: #e2e2e2; color: #555; }
+.footer { margin-top: 20px; font-size: 0.85rem; color: #555; }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    Violin Rental<span>Admin Panel</span>
-  </div>
-  <nav>
-    <a href="admin_dashboard.php" class="active">Dashboard</a>
-    <div class="nav-section">Customers</div>
-    <a href="query.php">View Customers</a>
-    <a href="insert.php">Add Customer</a>
-    <div class="nav-section">Inventory</div>
-    <a href="products.php">Products</a>
-    <div class="nav-section">Rentals</div>
-    <a href="rentals.php">All Rentals</a>
-    <a href="rental_insert.php">New Rental</a>
-    <div class="nav-section">Reports</div>
-    <a href="queries.php">Advanced Queries</a>
-  </nav>
-  <div class="sidebar-footer">
-    Logged in as <strong><?= htmlspecialchars(current_username()) ?></strong><br>
-    <a href="logout.php">Sign out</a>
-  </div>
-</aside>
+<h1>Admin Dashboard — Violin Rental</h1>
+<p class="welcome">Logged in as <strong><?= htmlspecialchars(current_username()) ?></strong></p>
 
-<main class="main">
-  <div class="page-header">
-    <h1>Dashboard</h1>
-    <p>Welcome back, <?= htmlspecialchars(current_username()) ?>. Here's the agency overview.</p>
-  </div>
+<nav>
+  <a href="admin_dashboard.php">Dashboard</a><span class="nav-sep">|</span>
+  <a href="query.php">View Customers</a><span class="nav-sep">|</span>
+  <a href="insert.php">Add Customer</a><span class="nav-sep">|</span>
+  <a href="products.php">Products</a><span class="nav-sep">|</span>
+  <a href="rentals.php">All Rentals</a><span class="nav-sep">|</span>
+  <a href="rental_insert.php">New Rental</a><span class="nav-sep">|</span>
+  <a href="queries.php">Advanced Queries</a><span class="nav-sep">|</span>
+  <a href="logout.php">Sign Out</a>
+</nav>
 
-  <div class="stats">
-    <div class="stat-card">
-      <div class="stat-label">Customers</div>
-      <div class="stat-value"><?= $stats['customers'] ?></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Products</div>
-      <div class="stat-value"><?= $stats['products'] ?></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Active Rentals</div>
-      <div class="stat-value"><?= $stats['active_rentals'] ?></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Total Revenue</div>
-      <div class="stat-value money"><?= number_format($stats['revenue'], 2) ?></div>
-    </div>
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">Customers</div>
+    <div class="stat-value"><?= $stats['customers'] ?></div>
   </div>
+  <div class="stat-card">
+    <div class="stat-label">Products</div>
+    <div class="stat-value"><?= $stats['products'] ?></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Rentals</div>
+    <div class="stat-value"><?= $stats['active_rentals'] ?></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Revenue</div>
+    <div class="stat-value">$<?= number_format($stats['revenue'], 2) ?></div>
+  </div>
+</div>
 
-  <h2 class="section-title">Recent Rentals</h2>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr><th>Rental ID</th><th>Customer</th><th>Start</th><th>End</th><th>Days</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-        <?php foreach ($recent as $r): ?>
-        <?php $active = $r['rental_end_date'] >= date('Y-m-d'); ?>
-        <tr>
-          <td>#<?= $r['rental_id'] ?></td>
-          <td><?= htmlspecialchars($r['name']) ?></td>
-          <td><?= $r['rental_date'] ?></td>
-          <td><?= $r['rental_end_date'] ?></td>
-          <td><?= $r['total_days'] ?></td>
-          <td><span class="badge <?= $active ? 'badge-active' : 'badge-past' ?>"><?= $active ? 'Active' : 'Ended' ?></span></td>
-        </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
-  </div>
-</main>
+<h2>Recent Rentals</h2>
+<table>
+  <thead>
+    <tr><th>Rental ID</th><th>Customer</th><th>Start</th><th>End</th><th>Days</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <?php foreach ($recent as $r): ?>
+    <?php $active = $r['rental_end_date'] >= date('Y-m-d'); ?>
+    <tr>
+      <td>#<?= $r['rental_id'] ?></td>
+      <td><?= htmlspecialchars($r['name']) ?></td>
+      <td><?= $r['rental_date'] ?></td>
+      <td><?= $r['rental_end_date'] ?></td>
+      <td><?= $r['total_days'] ?></td>
+      <td><span class="badge <?= $active ? 'badge-active' : 'badge-past' ?>"><?= $active ? 'Active' : 'Ended' ?></span></td>
+    </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
 
 </body>
 </html>
