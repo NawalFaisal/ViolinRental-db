@@ -13,7 +13,7 @@
 3. **Go to `login.php`** to start using the system.
 
 **URL:**  
-[http://vcandle.cs.uleth.ca/~twog3669/ViolinRental-db/login.php](http://vcandle.cs.uleth.ca/~twog3669/ViolinRental-db/login.php)
+[http://vcandle.cs.uleth.ca/~twog3669/ViolinRental-db/login.php](http://vcandle.cs.uleth.ca/~twog3669/ViolinRental-db-main/login.php)
 
 ---
 
