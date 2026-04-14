@@ -1,5 +1,7 @@
 <?php
-include 'db.php';
+require_once 'session.php';
+require_once 'db.php';
+require_login('admin');
 $conn = getConnection();
 $search = trim($_GET['search'] ?? '');
 $results = [];
@@ -64,6 +66,6 @@ $conn->close();
 <?php endif; ?>
 
 <br>
-<a href="insert.php">Add new customer</a>
+<a href="insert.php">Add new customer</a> | <a href="admin_dashboard.php">← Back to Dashboard</a>
 </body>
 </html>

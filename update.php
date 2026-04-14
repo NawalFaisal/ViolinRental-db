@@ -1,5 +1,7 @@
 <?php
-include 'db.php';
+require_once 'session.php';
+require_once 'db.php';
+require_login('admin');
 $message = '';
 $row = null;
 
@@ -7,8 +9,12 @@ $conn = getConnection();
 
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
-    $r = $conn->query("SELECT * FROM CUSTOMER WHERE customer_id=$id");
+    $stmt = $conn->prepare("SELECT * FROM CUSTOMER WHERE customer_id = ?");
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $r = $stmt->get_result();
     $row = $r ? $r->fetch_assoc() : null;
+    $stmt->close();
     if (!$row) $message = "No customer found with ID $id.";
 }
 
@@ -52,6 +58,7 @@ $conn->close();
     <button type="submit">Save Changes</button>
 </form>
 <?php endif; ?>
-<a href="query.php">View all customers</a>
+<br>
+<a href="query.php">View all customers</a> | <a href="admin_dashboard.php">← Back to Dashboard</a>
 </body>
 </html>

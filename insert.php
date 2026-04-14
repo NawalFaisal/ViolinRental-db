@@ -1,5 +1,7 @@
 <?php
-include 'db.php';
+require_once 'session.php';
+require_once 'db.php';
+require_login('admin');
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     Province: <input type="text" name="province"><br><br>
     <button type="submit">Insert</button>
 </form>
-<a href="query.php">View all customers</a>
+<br>
+<a href="query.php">View all customers</a> | <a href="admin_dashboard.php">← Back to Dashboard</a>
 </body>
 </html>
